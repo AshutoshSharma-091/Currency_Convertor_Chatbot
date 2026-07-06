@@ -1,38 +1,50 @@
 from flask import Flask, request, jsonify
-
 import requests
+
 app = Flask(__name__)
 
-@app.route('/',methods=['POST'])
-def index():
-    data = request.get_json()
-    source_currency = data['queryResult']['parameters']['unit-currency'] ['currency']
-    amount = data['queryResult']['parameters']['unit-currency']['amount']
-    target_currency = data['queryResult']['parameters']['currency-name']
+API_KEY = "8e7b582361ab50f6d759472ddb42c62123ed"
 
-    cf = fetch_conversion_factor(source_currency, target_currency)
-    final_amount = amount * cf
-    final_amount = round(final_amount,2)
-    response = {
-        'fulfillmentText':"{} {} is {} {}" . format(amount,source_currency,final_amount,target_currency)
-    }
-    return jsonify(response)
 
-def fetch_conversion_factor(source,target):
-    url = "https://currencyapi.net/api/v2/rates?base={}_{}&output=json&key=8e7b582361ab50f6d759472ddb42c62123ed".format(source,target)
+def fetch_conversion_factor(source, target):
+    url = f"https://currencyapi.net/api/v2/rates?base={source}&output=json&key={API_KEY}"
 
     response = requests.get(url)
-    response.json()
-    return response['{}_{}'.format(source,target)]
+    data = response.json()
+
+    print(data)
+
+    if "rates" not in data:
+        return None
+
+    return data["rates"].get(target)
+
+
+@app.route("/", methods=["POST"])
+def index():
+    data = request.get_json()
+
+    parameters = data.get("queryResult", {}).get("parameters", {})
+
+    source_currency = parameters["unit-currency"]["currency"]
+    amount = parameters["unit-currency"]["amount"]
+    target_currency = parameters["currency-name"]
+
+    conversion_factor = fetch_conversion_factor(source_currency, target_currency)
+
+    if conversion_factor is None:
+        return jsonify({
+            "fulfillmentText": "Unable to fetch exchange rate."
+        })
+
+    final_amount = round(amount * conversion_factor, 2)
+
+    response = {
+        "fulfillmentText": f"{amount} {source_currency} = {final_amount} {target_currency}"
+    }
+
+    return jsonify(response)
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
-
-from flask import Flask
-
-app = Flask(__name__)
-
-# Your routes here
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)
