@@ -27,3 +27,12 @@ def fetch_conversion_factor(source,target):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+from flask import Flask
+
+app = Flask(__name__)
+
+# Your routes here
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
