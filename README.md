@@ -60,5 +60,5 @@ Multi-language support.
 User authentication and personalized preferences.
 Graphical exchange rate trends.
 
-Bot Telegram Name is : Ramukaka_091
+Bot Telegram Name : Ramukaka_091
 
