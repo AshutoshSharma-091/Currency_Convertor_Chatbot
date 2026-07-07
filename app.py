@@ -1,23 +1,23 @@
 from flask import Flask, request, jsonify
-import requests
 
 app = Flask(__name__)
 
-API_KEY = "8e7b582361ab50f6d759472ddb42c62123ed"
+import requests
 
+API_KEY = "YOUR_API_KEY"
 
 def fetch_conversion_factor(source, target):
-    url = f"https://currencyapi.net/api/v2/rates?base={source}&output=json&key={API_KEY}"
+    url = f"https://v6.exchangerate-api.com/v6/{API_KEY}/latest/{source}"
 
     response = requests.get(url)
     data = response.json()
 
-    print(data)
+    print(data)  # For debugging
 
-    if "rates" not in data:
+    if data["result"] != "success":
         return None
 
-    return data["rates"].get(target)
+    return data["conversion_rates"][target]
 
 
 @app.route("/", methods=["POST"])
