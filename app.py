@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 import requests
 
-API_KEY = "YOUR_API_KEY"
+API_KEY = "cd28b95b6587cc7efc886a2b"
 
 def fetch_conversion_factor(source, target):
     url = f"https://v6.exchangerate-api.com/v6/{API_KEY}/latest/{source}"
