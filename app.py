@@ -20,8 +20,10 @@ def fetch_conversion_factor(source, target):
     return data["conversion_rates"][target]
 
 
-@app.route("/", methods=["POST"])
+@app.route("/", methods=["GET", "POST"])
 def index():
+    if request.method == "GET":
+        return "Webhook is running!"
     data = request.get_json()
 
     parameters = data.get("queryResult", {}).get("parameters", {})
